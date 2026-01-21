@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админка - Советы от Левонки</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Советы от Левонки</h1>
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Главная</a></li>
+                        <li><a href="#stats" class="nav-link active">Статистика</a></li>
+                        <li><a href="#articles" class="nav-link">Все статьи</a></li>
+                        <li><a href="#categories" class="nav-link">Категории</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="index.html" class="btn btn-outline">На сайт</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <!-- Заголовок админки -->
+            <section class="admin-header">
+                <h2 class="admin-title">Панель управления</h2>
+                <p class="admin-subtitle">Управление контентом блога "Советы от Левонки"</p>
+                <div class="admin-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="adminTotalArticles">0</span>
+                        <span class="stat-label">всего статей</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="adminTodayArticles">0</span>
+                        <span class="stat-label">сегодня</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">категорий</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Таблица статей -->
+            <section class="admin-section">
+                <h3 class="section-title">Управление статьями</h3>
+                <div class="table-controls">
+                    <a href="index.html#createArticleBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Новая статья
+                    </a>
+                    <div class="search-box">
+                        <input type="text" id="articleSearch" placeholder="Поиск по статьям...">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Заголовок</th>
+                            <th>Категория</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminArticlesTable">
+                        <!-- Статьи будут загружены через JavaScript -->
+                        <tr>
+                            <td colspan="6" class="loading-cell">
+                                <div class="spinner"></div>
+                                <p>Загрузка статей...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Статистика по категориям -->
+            <section class="admin-section">
+                <h3 class="section-title">Статистика по категориям</h3>
+                <div class="stats-grid" id="categoryStats">
+                    <!-- Статистика будет загружена через JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3 class="footer-logo">Советы от Левонки</h3>
+                    <p class="footer-tagline">Административная панель</p>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html" class="footer-link">Вернуться на сайт</a>
+                    <a href="#" class="footer-link">Экспорт данных</a>
+                    <a href="#" class="footer-link">Настройки</a>
+                </div>
+            </div>
+            <p class="footer-copyright">© 2023 Левонка. Админ-панель v1.0</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Скрипт для админки
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализировать тему
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        // Установить начальную тему
+        const savedTheme = localStorage.getItem('levonka_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Установить правильную иконку
+        const icon = themeToggle.querySelector('i');
+        icon.className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('levonka_theme', newTheme);
+            
+            const icon = this.querySelector('i');
+            icon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        });
+    }
+
+    // Загрузить данные для админки
+    loadAdminData();
+    
+    // Настроить поиск
+    setupSearch();
+    
+    // Настроить кнопки действий
+    setupActionButtons();
+});
+
+function loadAdminData() {
+    // Получить статьи из localStorage
+    const articles = JSON.parse(localStorage.getItem('levonka_articles')) || [];
+    
+    // Обновить счетчики
+    document.getElementById('adminTotalArticles').textContent = articles.length;
+    
+    // Посчитать статьи за сегодня (2025 год)
+    const today = getCurrentDate();
+    const todayArticles = articles.filter(article => article.createdAt === today).length;
+    document.getElementById('adminTodayArticles').textContent = todayArticles;
+    
+    // Заполнить таблицу
+    fillArticlesTable(articles);
+    
+    // Показать статистику по категориям
+    showCategoryStats(articles);
+}
+
+function getCurrentDate() {
+    const now = new Date();
+    return '2025-' + 
+           String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+           String(now.getDate()).padStart(2, '0');
+}
+
+function fillArticlesTable(articles) {
+    const tableBody = document.getElementById('adminArticlesTable');
+    
+    if (articles.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="no-data">
+                    <i class="fas fa-newspaper"></i>
+                    <p>Статей пока нет</p>
+                    <a href="index.html" class="btn btn-outline" onclick="setAdminAction('create')">
+                        Создать первую статью
+                    </a>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Сортируем статьи по дате (новые сверху)
+    const sortedArticles = [...articles].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    const rows = sortedArticles.map(article => `
+        <tr>
+            <td>${article.id}</td>
+            <td>
+                <strong>${article.title}</strong><br>
+                <small>${article.previewText?.substring(0, 50) || article.content.substring(0, 50)}...</small>
+            </td>
+            <td>
+                <span class="category-badge">${article.categoryName}</span>
+            </td>
+            <td>
+                ${article.createdAt}<br>
+                <small>${article.updatedAt !== article.createdAt ? `обновлено: ${article.updatedAt}` : ''}</small>
+            </td>
+            <td>
+                <span class="status-published">Опубликовано</span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="editArticleFromAdmin(${article.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" onclick="deleteArticleAdmin(${article.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn" onclick="viewArticleFromAdmin(${article.id})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    tableBody.innerHTML = rows;
+}
+
+function setupActionButtons() {
+    // Уже настроено через inline обработчики
+}
+
+function showCategoryStats(articles) {
+    const categories = {
+        'figurkonovosti': { name: 'Фигурконовости', count: 0, color: '#333' },
+        'igronovosti': { name: 'Игроновости', count: 0, color: '#666' },
+        'stress': { name: 'Стресс', count: 0, color: '#999' },
+        'cooking': { name: 'Кулинария', count: 0, color: '#ccc' }
+    };
+    
+    // Посчитать статьи по категориям
+    articles.forEach(article => {
+        if (categories[article.category]) {
+            categories[article.category].count++;
+        }
+    });
+    
+    // Отобразить статистику
+    const statsContainer = document.getElementById('categoryStats');
+    const statsHTML = Object.values(categories).map(cat => `
+        <div class="stat-card">
+            <div class="stat-card-header" style="background: ${cat.color}">
+                <h4>${cat.name}</h4>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-number">${cat.count}</div>
+                <div class="stat-label">статей</div>
+            </div>
+        </div>
+    `).join('');
+    
+    statsContainer.innerHTML = statsHTML;
+}
+
+function setupSearch() {
+    const searchInput = document.getElementById('articleSearch');
+    const searchBtn = document.querySelector('.search-btn');
+    
+    if (searchInput && searchBtn) {
+        const performSearch = () => {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const articles = JSON.parse(localStorage.getItem('levonka_articles')) || [];
+            
+            if (!searchTerm) {
+                fillArticlesTable(articles);
+                return;
+            }
+            
+            const filteredArticles = articles.filter(article => 
+                article.title.toLowerCase().includes(searchTerm) ||
+                article.content.toLowerCase().includes(searchTerm) ||
+                article.categoryName.toLowerCase().includes(searchTerm)
+            );
+            
+            fillArticlesTable(filteredArticles);
+        };
+        
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
+}
+
+function deleteArticleAdmin(id) {
+    if (!confirm('Вы уверены, что хотите удалить эту статью?')) {
+        return;
+    }
+    
+    const articles = JSON.parse(localStorage.getItem('levonka_articles')) || [];
+    const filteredArticles = articles.filter(article => article.id !== id);
+    localStorage.setItem('levonka_articles', JSON.stringify(filteredArticles));
+    
+    // Перезагрузить данные
+    loadAdminData();
+    
+    // Показать уведомление
+    showNotification('Статья удалена!');
+}
+
+function editArticleFromAdmin(id) {
+    // Сохраняем ID статьи и действие для главной страницы
+    localStorage.setItem('adminAction', 'edit');
+    localStorage.setItem('adminArticleId', id);
+    
+    // Переходим на главную страницу
+    window.location.href = 'index.html';
+}
+
+function viewArticleFromAdmin(id) {
+    // Сохраняем ID статьи и действие для главной страницы
+    localStorage.setItem('adminAction', 'view');
+    localStorage.setItem('adminArticleId', id);
+    
+    // Переходим на главную страницу
+    window.location.href = 'index.html';
+}
+
+function setAdminAction(action) {
+    // Для кнопки "Создать первую статью"
+    localStorage.setItem('adminAction', action);
+    window.location.href = 'index.html';
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        color: white;
+        padding: 15px 25px;
+        border: 2px solid #666;
+        z-index: 3000;
+        animation: slideIn 0.3s ease-out;
+        font-weight: 600;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+    </script>
+</body>
+</html>
